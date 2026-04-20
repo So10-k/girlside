@@ -70,11 +70,16 @@ export default {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        'pulse-soft': {
+          '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255, 168, 146, 0.5)' },
+          '50%': { transform: 'scale(1.06)', boxShadow: '0 0 0 8px rgba(255, 168, 146, 0)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 260ms ease-out both',
         'soft-bounce': 'soft-bounce 1.6s ease-in-out infinite',
         shimmer: 'shimmer 2.2s linear infinite',
+        'pulse-soft': 'pulse-soft 1.4s ease-in-out infinite',
       },
     },
   },

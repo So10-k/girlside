@@ -1,4 +1,5 @@
 import type { Lesson, Unit } from './types';
+import l0 from './lessons/00-keyboard-basics';
 import l1 from './lessons/01-hello-heading';
 import l2 from './lessons/02-paragraphs';
 import l3 from './lessons/03-colors-and-fonts';
@@ -8,9 +9,16 @@ import l6 from './lessons/06-images';
 import l7 from './lessons/07-flex-layout';
 import l8 from './lessons/08-first-javascript';
 
-export const LESSONS: Lesson[] = [l1, l2, l3, l4, l5, l6, l7, l8];
+export const LESSONS: Lesson[] = [l0, l1, l2, l3, l4, l5, l6, l7, l8];
 
 export const UNITS: Unit[] = [
+  {
+    id: 'unit-00-welcome',
+    title: 'Before we begin',
+    subtitle: 'Meet your keyboard (no code yet!)',
+    color: 'rose',
+    lessonIds: [l0.id],
+  },
   {
     id: 'unit-01-hello',
     title: 'Hello, Web!',

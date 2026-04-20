@@ -67,6 +67,7 @@ export default function LessonPanel() {
   const hasHints = hints.length > 0;
   const hasCheck = !!step.check;
   const hasSolution = !!step.solution;
+  const isInteractive = !!step.hideEditor;
   const totalSteps = lesson.steps.length;
   const stepNumber = stepIdx + 1;
   const progress = Math.round(((stepIdx + (stepMatches ? 1 : 0)) / totalSteps) * 100);
@@ -130,7 +131,7 @@ export default function LessonPanel() {
         </div>
       )}
 
-      {hasCheck && (
+      {hasCheck && !isInteractive && (
         <motion.div
           layout
           className={`rounded-2xl border p-3 flex items-center gap-3 ${
@@ -176,8 +177,15 @@ export default function LessonPanel() {
         )}
       </AnimatePresence>
 
+      {isInteractive && (
+        <div className="rounded-2xl border border-peach-200 bg-peach-50 p-3 text-sm text-ink-soft leading-relaxed">
+          Follow along in the big panel to the right — when you finish, it'll
+          automatically move you to the next step.
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-2">
-        {hasHints && (
+        {hasHints && !isInteractive && (
           <button
             className="btn-soft"
             onClick={() => nextHint()}
@@ -194,12 +202,12 @@ export default function LessonPanel() {
             {hintIndex < 0 ? 'Show a hint' : hasMoreHints ? 'Next hint' : 'No more hints'}
           </button>
         )}
-        {hasSolution && (
+        {hasSolution && !isInteractive && (
           <button className="btn-ghost" onClick={() => setAskReveal(true)}>
             <Eye size={14} /> show solution
           </button>
         )}
-        {hasCheck && (
+        {hasCheck && !isInteractive && (
           <button
             className="btn-ghost"
             onClick={() => resetStep()}

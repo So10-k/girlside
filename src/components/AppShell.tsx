@@ -3,6 +3,7 @@ import { ArrowLeft, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOp
 import LessonPanel from './LessonPanel';
 import EditorTabs from './EditorTabs';
 import CodeEditor from './CodeEditor';
+import InteractiveStep from './InteractiveStep';
 import Preview from './Preview';
 import TutorPanel from './TutorPanel';
 import SaveStatus from './SaveStatus';
@@ -30,6 +31,7 @@ export default function AppShell() {
   const setActiveTab = useAppStore((s) => s.setActiveTab);
   const updateBuffer = useAppStore((s) => s.updateBuffer);
   const formatActiveBuffer = useAppStore((s) => s.formatActiveBuffer);
+  const advanceStep = useAppStore((s) => s.advanceStep);
   const justCompleted = useAppStore((s) => s.justCompletedLessonId);
   const dismissCelebration = useAppStore((s) => s.dismissCelebration);
 
@@ -74,6 +76,12 @@ export default function AppShell() {
   }
 
   const value = project.buffers[activeTab];
+
+  const currentLesson =
+    project.kind === 'lesson' && project.sourceId ? lessonById(project.sourceId) : undefined;
+  const currentStep = currentLesson?.steps[project.activeStepIndex ?? 0];
+  const interactiveMode = !!currentStep?.hideEditor;
+  const interactiveStep = currentStep?.interactive;
 
   return (
     <div className="h-full w-full flex flex-col">
@@ -132,7 +140,9 @@ export default function AppShell() {
           className="h-full grid gap-4 grid-cols-1"
           style={{
             gridTemplateColumns: isLarge
-              ? `${showLesson ? '20rem ' : ''}minmax(0,1fr)${showPreview ? ' 24rem' : ''}`
+              ? `${showLesson ? '20rem ' : ''}minmax(0,1fr)${
+                  showPreview && !interactiveMode ? ' 24rem' : ''
+                }`
               : undefined,
           }}
         >
@@ -148,35 +158,45 @@ export default function AppShell() {
                 <LessonPanel />
               </div>
             )}
-            <div className="card p-3 flex-1 min-h-0 flex flex-col">
-              <div className="flex items-center justify-between pb-2">
-                <EditorTabs active={activeTab} onChange={setActiveTab} />
-                <div className="hidden md:flex items-center gap-2 text-[11px] text-ink-muted pr-1">
-                  <Sparkles size={12} /> saves as you type
-                </div>
-              </div>
-              <div className="flex-1 min-h-0">
-                <CodeEditor
-                  value={value}
-                  language={activeTab}
-                  beginnerMode={beginnerMode}
-                  onChange={(v) => updateBuffer(activeTab, v)}
-                  onCursorLine={(line, num) => {
-                    setCursorLine(line);
-                    setCursorLineNum(num);
-                  }}
+            {interactiveMode && interactiveStep ? (
+              <div className="flex-1 min-h-0 flex">
+                <InteractiveStep
+                  key={currentStep!.id}
+                  step={interactiveStep}
+                  onDone={() => advanceStep()}
                 />
               </div>
-            </div>
+            ) : (
+              <div className="card p-3 flex-1 min-h-0 flex flex-col">
+                <div className="flex items-center justify-between pb-2">
+                  <EditorTabs active={activeTab} onChange={setActiveTab} />
+                  <div className="hidden md:flex items-center gap-2 text-[11px] text-ink-muted pr-1">
+                    <Sparkles size={12} /> saves as you type
+                  </div>
+                </div>
+                <div className="flex-1 min-h-0">
+                  <CodeEditor
+                    value={value}
+                    language={activeTab}
+                    beginnerMode={beginnerMode}
+                    onChange={(v) => updateBuffer(activeTab, v)}
+                    onCursorLine={(line, num) => {
+                      setCursorLine(line);
+                      setCursorLineNum(num);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </section>
 
-          {showPreview && (
+          {showPreview && !interactiveMode && (
             <aside className="min-h-0 grid grid-rows-[minmax(0,3fr)_minmax(0,2fr)] gap-4 hidden lg:grid">
               <Preview buffers={project.buffers} />
               <TutorPanel cursorLine={cursorLine} lineNumber={cursorLineNum} lang={activeTab} />
             </aside>
           )}
-          {showPreview && (
+          {showPreview && !interactiveMode && (
             <div className="lg:hidden grid grid-rows-[minmax(0,3fr)_minmax(0,2fr)] gap-4 min-h-0">
               <Preview buffers={project.buffers} />
               <TutorPanel cursorLine={cursorLine} lineNumber={cursorLineNum} lang={activeTab} />
