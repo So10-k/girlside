@@ -66,6 +66,24 @@ const htmlRules: Rule[] = [
       `An input where people can type. The type "${m[1]}" tells the browser what kind of ` +
       `value to expect (like text, number, or email).`,
   },
+  {
+    test: /<input[^>]*>/i,
+    explain: () =>
+      `An <input> is a field people can type into. Add type="text" for words, type="password" ` +
+      `to hide what they type, or type="email" for email addresses.`,
+  },
+  {
+    test: /<label[^>]*for=["']([^"']+)["'][^>]*>(.*?)<\/label>/i,
+    explain: (m) =>
+      `A <label> is a friendly name for an input. "for=\\"${m[1]}\\"" links it to the input ` +
+      `whose id is "${m[1]}" — clicking the label "${m[2]}" focuses that input.`,
+  },
+  {
+    test: /<form[^>]*>/i,
+    explain: () =>
+      `A <form> is a container for inputs and a submit button. When someone presses enter or ` +
+      `clicks submit, the form fires a "submit" event that your JS can catch.`,
+  },
 ];
 
 const cssRules: Rule[] = [
@@ -132,6 +150,65 @@ const cssRules: Rule[] = [
 ];
 
 const jsRules: Rule[] = [
+  {
+    test: /db\.auth\.signUp\s*\(/i,
+    explain: () =>
+      `db.auth.signUp creates a new account. Pass an object like { username, password } — ` +
+      `it throws if the username is already taken, otherwise it signs them in right away.`,
+  },
+  {
+    test: /db\.auth\.signIn\s*\(/i,
+    explain: () =>
+      `db.auth.signIn checks a username and password. It returns the user if they match, ` +
+      `or null if not. Great for wiring up a login form.`,
+  },
+  {
+    test: /db\.auth\.currentUser\s*\(/i,
+    explain: () =>
+      `db.auth.currentUser() tells you who is signed in right now — or null if nobody is. ` +
+      `Use it whenever the page first loads to decide what to show.`,
+  },
+  {
+    test: /db\.auth\.signOut\s*\(/i,
+    explain: () =>
+      `db.auth.signOut() logs the current user out. After this, currentUser() returns null.`,
+  },
+  {
+    test: /db\.(\w+)\.create\s*\(/i,
+    explain: (m) =>
+      `db.${m[1]}.create saves a new record into the "${m[1]}" collection. You pass an object ` +
+      `with whatever fields you like — an id and createdAt are added for you.`,
+  },
+  {
+    test: /db\.(\w+)\.find\s*\(/i,
+    explain: (m) =>
+      `db.${m[1]}.find({...}) returns the FIRST record in "${m[1]}" that matches every field ` +
+      `in the query — or null if nothing matches.`,
+  },
+  {
+    test: /db\.(\w+)\.all\s*\(/i,
+    explain: (m) =>
+      `db.${m[1]}.all() returns EVERY record in "${m[1]}" as an array. Loop over it with ` +
+      `forEach or map to show them on the page.`,
+  },
+  {
+    test: /db\.seedDemoUsers\s*\(/i,
+    explain: () =>
+      `db.seedDemoUsers() fills the users collection with a couple of practice accounts ` +
+      `(ada / lovelace and grace / hopper). Handy while learning.`,
+  },
+  {
+    test: /(\w+)\.addEventListener\(["']submit["']/i,
+    explain: (m) =>
+      `Listening for "${m[1]}" to be submitted. Inside the handler you'll usually call ` +
+      `e.preventDefault() to stop the page from reloading, then read the input values.`,
+  },
+  {
+    test: /\.preventDefault\s*\(\s*\)/i,
+    explain: () =>
+      `preventDefault() stops the browser's normal reaction to an event — like reloading the ` +
+      `page when a form submits. You do your own thing with JavaScript instead.`,
+  },
   {
     test: /const\s+(\w+)\s*=\s*document\.querySelector\(["']([^"']+)["']\)/i,
     explain: (m) =>

@@ -8,8 +8,11 @@ import l5 from './lessons/05-buttons-and-links';
 import l6 from './lessons/06-images';
 import l7 from './lessons/07-flex-layout';
 import l8 from './lessons/08-first-javascript';
+import l9 from './lessons/09-forms';
+import l10 from './lessons/10-database';
+import l11 from './lessons/11-login';
 
-export const LESSONS: Lesson[] = [l0, l1, l2, l3, l4, l5, l6, l7, l8];
+export const LESSONS: Lesson[] = [l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11];
 
 export const UNITS: Unit[] = [
   {
@@ -53,6 +56,13 @@ export const UNITS: Unit[] = [
     subtitle: 'Your first bit of JavaScript',
     color: 'rose',
     lessonIds: [l8.id],
+  },
+  {
+    id: 'unit-06-advanced',
+    title: 'Build a portal site',
+    subtitle: 'Forms, a tiny database, and real logins ✨',
+    color: 'lavender',
+    lessonIds: [l9.id, l10.id, l11.id],
   },
 ];
 

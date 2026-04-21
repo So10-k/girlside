@@ -1,3 +1,5 @@
+import { MOCK_DB_RUNTIME } from './mockDbRuntime';
+
 export interface Buffers {
   html: string;
   css: string;
@@ -56,9 +58,9 @@ export function buildSrcDoc({ html, css, js }: Buffers): string {
   }
 
   if (/<\/body>/i.test(out)) {
-    out = out.replace(/<\/body>/i, `${RUNTIME}${userScript}</body>`);
+    out = out.replace(/<\/body>/i, `${RUNTIME}${MOCK_DB_RUNTIME}${userScript}</body>`);
   } else {
-    out = `${out}${RUNTIME}${userScript}`;
+    out = `${out}${RUNTIME}${MOCK_DB_RUNTIME}${userScript}`;
   }
   return out;
 }
