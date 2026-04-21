@@ -6,6 +6,7 @@ import CodeEditor from './CodeEditor';
 import InteractiveStep from './InteractiveStep';
 import Preview from './Preview';
 import TutorPanel from './TutorPanel';
+import TypingHint from './TypingHint';
 import SaveStatus from './SaveStatus';
 import SnapshotHistory from './SnapshotHistory';
 import ConfettiBurst from './ConfettiBurst';
@@ -167,26 +168,31 @@ export default function AppShell() {
                 />
               </div>
             ) : (
-              <div className="card p-3 flex-1 min-h-0 flex flex-col">
-                <div className="flex items-center justify-between pb-2">
-                  <EditorTabs active={activeTab} onChange={setActiveTab} />
-                  <div className="hidden md:flex items-center gap-2 text-[11px] text-ink-muted pr-1">
-                    <Sparkles size={12} /> saves as you type
+              <>
+                <div className="card p-3 flex-1 min-h-0 flex flex-col">
+                  <div className="flex items-center justify-between pb-2">
+                    <EditorTabs active={activeTab} onChange={setActiveTab} />
+                    <div className="hidden md:flex items-center gap-2 text-[11px] text-ink-muted pr-1">
+                      <Sparkles size={12} /> saves as you type
+                    </div>
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <CodeEditor
+                      value={value}
+                      language={activeTab}
+                      beginnerMode={beginnerMode}
+                      onChange={(v) => updateBuffer(activeTab, v)}
+                      onCursorLine={(line, num) => {
+                        setCursorLine(line);
+                        setCursorLineNum(num);
+                      }}
+                    />
                   </div>
                 </div>
-                <div className="flex-1 min-h-0">
-                  <CodeEditor
-                    value={value}
-                    language={activeTab}
-                    beginnerMode={beginnerMode}
-                    onChange={(v) => updateBuffer(activeTab, v)}
-                    onCursorLine={(line, num) => {
-                      setCursorLine(line);
-                      setCursorLineNum(num);
-                    }}
-                  />
-                </div>
-              </div>
+                {currentStep?.task && (
+                  <TypingHint task={currentStep.task} buffers={project.buffers} />
+                )}
+              </>
             )}
           </section>
 

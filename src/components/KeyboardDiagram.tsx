@@ -83,9 +83,11 @@ function matches(key: Key, pressed: string | null, highlight: string | null): { 
   const compare = (val: string, k: Key): boolean => {
     const v = val.toLowerCase();
     if (k.target && k.target.toLowerCase() === v) return true;
-    if (!k.target && k.label.toLowerCase() === v) return true;
     if (v === ' ' && k.label === 'space') return true;
-    if (v.length === 1 && k.label.toLowerCase() === v) return true;
+    // Split the label so "; :" or ", <" match either glyph.
+    const tokens = k.label.toLowerCase().split(/\s+/);
+    if (tokens.includes(v)) return true;
+    if (v.length === 1 && tokens[0] === v) return true;
     return false;
   };
   return {
@@ -97,26 +99,40 @@ function matches(key: Key, pressed: string | null, highlight: string | null): { 
 export default function KeyboardDiagram({
   pressed,
   highlight,
+  shiftHighlight,
+  compact,
 }: {
   pressed?: string | null;
   highlight?: string | null;
+  /** If true, also glow both Shift keys (used when the next char is a shifted glyph). */
+  shiftHighlight?: boolean;
+  /** Smaller tiles, for inline use alongside the editor. */
+  compact?: boolean;
 }) {
+  const unit = compact ? 1.6 : 2.4;
+  const keyHeight = compact ? 'h-7' : 'h-10';
+  const fontSize = compact ? 'text-[10px]' : 'text-[11px]';
+  const pad = compact ? 'p-2' : 'p-3';
+  const rowGap = compact ? 'gap-1 mb-1' : 'gap-1.5 mb-1.5';
+
   return (
-    <div className="w-full max-w-3xl mx-auto select-none">
-      <div className="bg-white/80 rounded-3xl p-3 shadow-soft border border-white/80">
+    <div className="w-full select-none">
+      <div className={`bg-white/80 rounded-2xl ${pad} shadow-soft border border-white/80`}>
         {ROWS.map((row, ri) => (
-          <div key={ri} className="flex gap-1.5 mb-1.5 justify-center last:mb-0">
+          <div key={ri} className={`flex ${rowGap} justify-center last:mb-0`}>
             {row.map((k, ki) => {
               const { on, hint } = matches(k, pressed || null, highlight || null);
-              const width = `${(k.w || 1) * 2.4}rem`;
+              const isShiftKey = k.target === 'Shift';
+              const shiftGlow = shiftHighlight && isShiftKey;
+              const width = `${(k.w || 1) * unit}rem`;
               return (
                 <motion.div
                   key={ri + '-' + ki}
-                  className={`h-10 rounded-lg grid place-items-center text-[11px] font-medium border transition-colors
+                  className={`${keyHeight} rounded-lg grid place-items-center ${fontSize} font-medium border transition-colors
                     ${
                       on
                         ? 'bg-mint-200 border-mint-300 text-mint-500 shadow-inner'
-                        : hint
+                        : hint || shiftGlow
                         ? 'bg-peach-100 border-peach-200 text-peach-500 animate-pulse-soft'
                         : k.tone === 'mod'
                         ? 'bg-lavender-50 border-lavender-100 text-ink-muted'

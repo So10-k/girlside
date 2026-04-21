@@ -525,12 +525,17 @@ export function anyCompletedLesson(projects: ProjectRecord[]): Set<string> {
 }
 
 /**
- * A lesson is unlocked if it's the very first lesson, or the lesson just
- * before it has been completed in any project.
+ * A lesson is unlocked if:
+ *  - it's lesson 0 or lesson 1 (lesson 0 is the optional keyboard intro; lesson 1
+ *    is always the real start, so existing learners don't get locked out when we
+ *    prepend lesson 0),
+ *  - OR the learner has already completed it,
+ *  - OR the previous lesson has been completed in any project.
  */
 export function isLessonUnlocked(lessonId: string, completed: Set<string>): boolean {
   const idx = LESSONS.findIndex((l) => l.id === lessonId);
-  if (idx <= 0) return true;
+  if (idx <= 1) return true;
+  if (completed.has(lessonId)) return true;
   return completed.has(LESSONS[idx - 1].id);
 }
 
